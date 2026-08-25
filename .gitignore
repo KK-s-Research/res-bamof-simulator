@@ -6,6 +6,7 @@ results/**
 !results/**/raw/runs.csv
 !results/**/raw/workloads.csv.gz
 !results/**/raw/workloads-*.csv.gz
+!results/**/raw/workloads.SHA256
 .classpath
 .project
 .settings/
