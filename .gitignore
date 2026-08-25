@@ -1,5 +1,11 @@
 target/
-results/
+results/**
+!results/
+!results/**/
+!results/**/raw/
+!results/**/raw/runs.csv
+!results/**/raw/workloads.csv.gz
+!results/**/raw/workloads-*.csv.gz
 .classpath
 .project
 .settings/

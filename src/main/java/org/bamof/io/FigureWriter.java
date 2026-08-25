@@ -26,12 +26,12 @@ import org.bamof.model.TimeSeriesPoint;
 import org.bamof.stats.SummaryRow;
 
 public final class FigureWriter {
-    private static final int WIDTH = 1100;
-    private static final int HEIGHT = 720;
-    private static final int LEFT = 125;
-    private static final int RIGHT = 285;
-    private static final int TOP = 55;
-    private static final int BOTTOM = 125;
+    private static final int WIDTH = 1500;
+    private static final int HEIGHT = 980;
+    private static final int LEFT = 210;
+    private static final int RIGHT = 390;
+    private static final int TOP = 85;
+    private static final int BOTTOM = 180;
     private static final DecimalFormat NUMBER = new DecimalFormat("0.###");
 
     private static final Map<Algorithm, Color> COLORS = Map.of(
@@ -236,7 +236,7 @@ public final class FigureWriter {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, WIDTH, HEIGHT);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 17));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 34));
     }
 
     private static void drawBox(Graphics2D g, int x, int y, int w, int h, String title, String subtitle) {
@@ -246,9 +246,9 @@ public final class FigureWriter {
         g.setColor(new Color(76, 105, 140));
         g.drawRoundRect(x, y, w, h, 12, 12);
         g.setColor(new Color(25, 35, 50));
-        g.setFont(new Font("SansSerif", Font.BOLD, 17));
+        g.setFont(new Font("SansSerif", Font.BOLD, 32));
         g.drawString(title, x + 16, y + 30);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 27));
         g.setColor(new Color(70, 80, 95));
         g.drawString(subtitle, x + 16, y + 54);
     }
@@ -290,7 +290,7 @@ public final class FigureWriter {
 
     private static void drawNoData(Graphics2D g) {
         g.setColor(new Color(80, 80, 80));
-        g.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 34));
         g.drawString("No data available for this figure.", LEFT, TOP + 80);
     }
 
@@ -300,12 +300,12 @@ public final class FigureWriter {
         int x0 = LEFT;
         int y0 = TOP + plotHeight;
 
-        g.setStroke(new BasicStroke(1.2f));
+        g.setStroke(new BasicStroke(2.2f));
         g.setColor(new Color(70, 70, 70));
         g.drawLine(x0, y0, x0 + plotWidth, y0);
         g.drawLine(x0, TOP, x0, y0);
 
-        g.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 34));
         FontMetrics metrics = g.getFontMetrics();
         g.setColor(new Color(225, 225, 225));
         for (int i = 0; i <= 5; i++) {
@@ -314,7 +314,7 @@ public final class FigureWriter {
             g.drawLine(x0, y, x0 + plotWidth, y);
             g.setColor(new Color(70, 70, 70));
             String label = NUMBER.format(yValue);
-            g.drawString(label, x0 - metrics.stringWidth(label) - 12, y + 6);
+            g.drawString(label, x0 - metrics.stringWidth(label) - 22, y + 12);
             g.setColor(new Color(225, 225, 225));
         }
 
@@ -324,15 +324,15 @@ public final class FigureWriter {
             int x = xToPixel(xValue, bounds);
             g.drawLine(x, y0, x, y0 + 5);
             String label = NUMBER.format(xValue);
-            g.drawString(label, x - metrics.stringWidth(label) / 2, y0 + 32);
+            g.drawString(label, x - metrics.stringWidth(label) / 2, y0 + 64);
         }
 
-        g.setFont(new Font("SansSerif", Font.BOLD, 20));
+        g.setFont(new Font("SansSerif", Font.BOLD, 42));
         metrics = g.getFontMetrics();
         g.drawString(xLabel, x0 + plotWidth / 2 - metrics.stringWidth(xLabel) / 2, HEIGHT - 42);
 
         g.rotate(-Math.PI / 2.0);
-        g.drawString(yLabel, -(TOP + plotHeight / 2 + metrics.stringWidth(yLabel) / 2), 38);
+        g.drawString(yLabel, -(TOP + plotHeight / 2 + metrics.stringWidth(yLabel) / 2), 66);
         g.rotate(Math.PI / 2.0);
     }
 
@@ -343,7 +343,7 @@ public final class FigureWriter {
                 continue;
             }
             g.setColor(COLORS.getOrDefault(entry.getKey(), Color.DARK_GRAY));
-            g.setStroke(new BasicStroke(entry.getKey() == Algorithm.BADP_PLUS ? 3.2f : 2.2f));
+            g.setStroke(new BasicStroke(entry.getKey() == Algorithm.BADP_PLUS ? 6.4f : 4.8f));
             for (int i = 1; i < points.size(); i++) {
                 Point a = points.get(i - 1);
                 Point b = points.get(i);
@@ -353,30 +353,30 @@ public final class FigureWriter {
             for (Point point : points) {
                 int x = xToPixel(point.x(), bounds);
                 int y = yToPixel(point.y(), bounds);
-                g.fillOval(x - 4, y - 4, 8, 8);
+                g.fillOval(x - 9, y - 9, 18, 18);
             }
         }
     }
 
     private static void drawLegend(Graphics2D g, Map<Algorithm, List<Point>> series) {
-        int x = WIDTH - RIGHT + 55;
-        int y = TOP + 20;
-        g.setFont(new Font("SansSerif", Font.BOLD, 18));
+        int x = WIDTH - RIGHT + 45;
+        int y = TOP + 30;
+        g.setFont(new Font("SansSerif", Font.BOLD, 38));
         g.setColor(new Color(40, 40, 40));
         g.drawString("Algorithms", x, y);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        y += 32;
+        g.setFont(new Font("SansSerif", Font.PLAIN, 34));
+        y += 58;
         for (Algorithm algorithm : series.keySet()) {
             if (series.get(algorithm).isEmpty()) {
                 continue;
             }
             g.setColor(COLORS.getOrDefault(algorithm, Color.DARK_GRAY));
-            g.setStroke(new BasicStroke(3.0f));
-            g.drawLine(x, y - 5, x + 28, y - 5);
-            g.fillOval(x + 10, y - 9, 8, 8);
+            g.setStroke(new BasicStroke(5.0f));
+            g.drawLine(x, y - 11, x + 58, y - 11);
+            g.fillOval(x + 22, y - 20, 18, 18);
             g.setColor(new Color(40, 40, 40));
-            g.drawString(displayName(algorithm), x + 40, y);
-            y += 29;
+            g.drawString(displayName(algorithm), x + 76, y);
+            y += 50;
         }
     }
 

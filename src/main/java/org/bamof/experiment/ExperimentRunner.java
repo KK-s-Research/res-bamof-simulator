@@ -15,6 +15,7 @@ import org.bamof.io.CsvWriter;
 import org.bamof.io.FigureWriter;
 import org.bamof.io.ManuscriptArtifactWriter;
 import org.bamof.model.Algorithm;
+import org.bamof.model.RawWorkloadRow;
 import org.bamof.model.RunResult;
 import org.bamof.model.Task;
 import org.bamof.model.TimeSeriesPoint;
@@ -40,9 +41,11 @@ public final class ExperimentRunner {
             Algorithm.BADP_PLUS);
 
     private final SimulationEngine engine = new SimulationEngine();
+    private final List<RawWorkloadRow> rawWorkloads = new ArrayList<>();
 
     public List<RunResult> run(boolean full) throws IOException {
         List<RunResult> results = new ArrayList<>();
+        rawWorkloads.clear();
         SimulationConfig base = new SimulationConfig();
         base.repetitions = full ? 30 : 3;
         if (!full) {
@@ -180,10 +183,12 @@ public final class ExperimentRunner {
                     ? new TraceInspiredWorkloadGenerator()
                     : new SyntheticBurstyWorkloadGenerator();
             List<Task> workload = generator.generate(config);
+            String workloadType = config.traceInspired ? "trace-inspired" : "synthetic-bursty";
+            rawWorkloads.addAll(toRawWorkloadRows(experiment, variable, config.seed, workloadType, workload));
             log("  Repetition " + (repetition + 1) + "/" + base.repetitions
                     + ": seed=" + config.seed
                     + ", tasks=" + workload.size()
-                    + ", workload=" + (config.traceInspired ? "trace-inspired" : "synthetic-bursty"));
+                    + ", workload=" + workloadType);
             for (Algorithm algorithm : algorithms) {
                 log("    Running " + algorithm + "...");
                 RunResult result = engine.run(experiment, variable,
@@ -202,6 +207,22 @@ public final class ExperimentRunner {
         }
     }
 
+    private List<RawWorkloadRow> toRawWorkloadRows(String experiment, double variable, long seed,
+                                                   String workloadType, List<Task> workload) {
+        return workload.stream()
+                .map(task -> new RawWorkloadRow(
+                        experiment,
+                        variable,
+                        seed,
+                        workloadType,
+                        task.id(),
+                        task.arrivalSlot(),
+                        task.workloadMi(),
+                        task.deadlineSlot(),
+                        task.deadlineSlot() - task.arrivalSlot()))
+                .toList();
+    }
+
     private void writeOutputs(List<RunResult> results, boolean full) throws IOException {
         Path root = Path.of("results", full ? "manuscript-run" : "quick-run");
         log("");
@@ -214,6 +235,10 @@ public final class ExperimentRunner {
         CsvWriter.write(root.resolve("raw").resolve("runs.csv"),
                 new RunResult().csvHeader(), results, RunResult::toCsvRow);
         log("  wrote raw/runs.csv (" + results.size() + " rows)");
+
+        CsvWriter.write(root.resolve("raw").resolve("workloads.csv"),
+                RawWorkloadRow.csvHeader(), rawWorkloads, RawWorkloadRow::toCsvRow);
+        log("  wrote raw/workloads.csv (" + rawWorkloads.size() + " task rows)");
 
         List<SummaryRow> summaries = Aggregator.summarize(results);
         CsvWriter.write(root.resolve("aggregate").resolve("summary.csv"),

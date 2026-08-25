@@ -41,7 +41,7 @@ mvn compile exec:java -Dexec.args="quick"
 Full manuscript outputs are written under `results/manuscript-run/`.
 Quick smoke-test outputs are written under `results/quick-run/`.
 
-- `raw/`: per-run CSV files.
+- `raw/`: per-run metric CSV files and generated workload/task CSV files (`runs.csv` and `workloads.csv`). Repository snapshots store small workloads as `workloads.csv.gz` and the full manuscript workload as numbered `workloads-*.csv.gz` shards. Each shard is an independently readable CSV with its own header.
 - `aggregate/`: means and 95% confidence intervals.
 - `timeseries/`: active VM time series.
 - `stats/`: Wilcoxon signed-rank summaries.
@@ -90,4 +90,4 @@ Generated running-text artifacts:
 - `README.md`: build and execution instructions
 - `.gitignore`: excludes generated build and experiment outputs
 
-Generated directories such as `target/` and `results/` are intentionally not committed. Re-run the simulator to regenerate them.
+Generated build output under `target/` and bulky derived artifacts such as figures and tables are intentionally not committed. Run-level CSV files and compressed workload CSV files under `results/**/raw/` are kept so generated experiment inputs and per-run outputs can be archived with the project.
